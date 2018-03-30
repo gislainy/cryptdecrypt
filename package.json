@@ -1,0 +1,27 @@
+{
+  "name": "cryptdecrypt",
+  "version": "1.0.0",
+  "description": "Criptografa e descriptografa com Cifra de Cesaaar e Substituição ",
+  "main": "server/init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gislainy/cryptdecrypt.git"
+  },
+  "keywords": [
+    "criptografia",
+    "descriptografia",
+    "cifra",
+    "de",
+    "cesar",
+    "substituição"
+  ],
+  "author": "Fernando Junior e Gislainy Crisostomo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gislainy/cryptdecrypt/issues"
+  },
+  "homepage": "https://github.com/gislainy/cryptdecrypt#readme"
+}
