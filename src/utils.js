@@ -37,12 +37,64 @@ const utils = {
   fazDeslocamento(code, deslocamento) {
     if (typeof code === 'number') {
       const desc = code + deslocamento;
-      if (desc > alfabeto.length) {
+      if (desc >= alfabeto.length) {
         return desc - alfabeto.length;
       }
       return desc;
     } else return code;
-  }
+  },
+  geraAlfabetoAleatorio() {
+    const ret = [];
+    for(var a in alfabeto)
+      verifica(alfabeto[a]);
+    return ret;
+    function verifica(a) {
+      let code = utils.converteStringToCode(a)[0];
+      code = code == 0 ? parseInt(Math.random() * 10) : code; 
+      code = parseInt((Math.random() * 10) * code);
+      if(code >= alfabeto.length)
+       code = parseInt(code/ alfabeto.length)
+      const srt = utils.converteCodeToString([code]);
+      if (ret.every(r => r.eq != srt)) {
+        ret.push({
+          l: a,
+          eq: srt
+        });
+      } else verifica(a);
+    }
+  },
+  deslocamento(str, des) {
+    let code = utils.converteStringToCode(str);
+    code = utils.converteCodeToDeslocamento(code, des);
+    let newStr =  utils.converteCodeToString(code);
+    return {
+      key: des,
+      out: newStr
+    } 
+
+  },
+  substituicao(str) {
+    const ret = [];
+    const aletaorio = utils.geraAlfabetoAleatorio();
+    str = utils.removeAcentos(str).toUpperCase();
+    aletaorio.forEach(a => {
+      var regexpr = new RegExp(a.l, 'g');
+      str = str.replace(regexpr, a.eq.toLowerCase());
+    });
+    return {
+      key: aletaorio,
+      out: str.toLowerCase()
+    } 
+  },
+  converteSub(sub) {
+    sub.key.forEach(a => {
+      var regexpr = new RegExp(a.eq.toLowerCase(), 'g');
+      sub.out = sub.out.replace(regexpr, a.l.toUpperCase());
+    });
+    sub.out.toLowerCase();
+    return sub
+  },
+  
 }
 
 var removeAcentosRegExp = [];

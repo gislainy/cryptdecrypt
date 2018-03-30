@@ -2,8 +2,9 @@
   "name": "cryptdecrypt",
   "version": "1.0.0",
   "description": "Criptografa e descriptografa com Cifra de Cesaaar e Substituição ",
-  "main": "server/init.js",
+  "main": "src/init.js",
   "scripts": {
+    "start": "node src/init.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/gislainy/cryptdecrypt/issues"
   },
-  "homepage": "https://github.com/gislainy/cryptdecrypt#readme"
+  "homepage": "https://github.com/gislainy/cryptdecrypt#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }

@@ -1,0 +1,105 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Crypt/Decrypt</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Crypt/Decrypt</h1>
+    <div class="row">
+      <div class="col-sm">
+        <div class="form-group">
+          <label for="file">Escolha o arquivo</label>
+          <input type="file" class="form-control-file" id="file">
+        </div>
+        <div class="form-group ">
+          <label for="metodo">Escolha o método</label>
+          <select id="metodo" class="form-control form-control-lg">
+            <option value="null"></option>
+            <option value="crypt-cifra">Criptografa - Cifra de Cesar</option>
+            <option value="crypt-sub">Criptografa - Substituição</option>
+            <option value="decrypt-sub">Descriptografa - Substituição</option>
+            <option value="decrypt-cifra">Descriptografa - Cifra de Cesar</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="enviarArquivo()">Enviar</button>
+        <div class="form-group">
+          <label for="chave">Chave</label>
+          <textarea class="form-control" id="chave" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="out">Saída</label>
+          <textarea class="form-control" id="out" rows="10"></textarea>
+        </div>
+      </div>
+    </div>
+
+
+</body>
+<script>
+
+  function enviarArquivo() {
+    const metodo = document.querySelector('#metodo').value;
+    const file = document.querySelector('#file');
+    openFile(file);
+    function openFile(input) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var text = reader.result;
+        enviar_para_servidor(text);
+      };
+      if (input.files[0])
+        reader.readAsText(input.files[0]);
+      else {
+        return alert('Escolha um arquivo válido');
+      }
+    }
+    function enviar_para_servidor(json) {
+      let url;
+      if (metodo == "crypt-cifra")
+        url = '/api/crypt-cifra';
+      else if (metodo == "crypt-sub")
+        url = '/api/crypt-sub';
+      else if (metodo == "decrypt-sub")
+        url = '/api/decrypt-sub';
+      else if (metodo == "decrypt-cifra")
+        url = '/api/decrypt-cifra';
+      else {
+        return alert('Escolha um método válido');
+      }
+      var xmlHttp = new XMLHttpRequest();
+      var mimeType = 'text/json';
+      xmlHttp.open('POST', url, true);  // true : asynchrone false: synchrone
+      xmlHttp.setRequestHeader('Content-Type', mimeType);
+      xmlHttp.send(json);
+      xmlHttp.addEventListener('load', transferComplete, false);
+      xmlHttp.addEventListener('error', transferFailed, false);
+      xmlHttp.addEventListener('abort', transferCanceled, false);
+
+      function transferComplete(event) {
+        const res = JSON.parse(event.srcElement.response);
+        var chave = document.getElementById('chave');
+        chave.innerHTML = JSON.stringify(res.key);
+        var out = document.getElementById('out');
+        out.innerHTML = JSON.stringify(res.out, null, 2).replace(/\n/g,' ');;
+        console.log('success', 'A transferência foi concluída', 'Importa');
+      }
+
+      function transferFailed() {
+        console.log('success', 'Um erro ocorreu durante a transferência do arquivo', 'Importa');
+      }
+
+      function transferCanceled() {
+        console.log('success', 'A transferência foi cancelada pelo usuári', 'Importa');
+      }
+    }
+  }
+</script>
+
+</html>
