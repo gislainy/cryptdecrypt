@@ -136,7 +136,6 @@ const utils = {
     }
   },
   verificaSeTemNoDicionario(s) {
-    dicionario.map(d => d = utils.removeAcentos(d));
     return s.some(_s => dicionario.indexOf(_s) > 0);
   }
 }
@@ -196,6 +195,6 @@ Object.keys(mapaAcentos).forEach((acento) => {
   var fn = (s) => s.replace(regexpr, letra);
   removeAcentosRegExp.push(fn);
 });
-
+dicionario.map(d => d = utils.removeAcentos(d));
 
 module.exports = utils;
