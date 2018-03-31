@@ -1,4 +1,6 @@
 const alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let dicionario = require('./dicionario');
+
 const utils = {
   removeAcentos(s) {
     removeAcentosRegExp.forEach((fn) => {
@@ -36,26 +38,32 @@ const utils = {
   },
   fazDeslocamento(code, deslocamento) {
     if (typeof code === 'number') {
-      const desc = code + deslocamento;
-      if (desc >= alfabeto.length) {
+      let desc;
+      if (deslocamento > 0)
+        desc = code + deslocamento;
+      else desc = (deslocamento + code);
+      if (desc >= alfabeto.length ) {
         return desc - alfabeto.length;
+      } else if(desc < 0) {
+        return alfabeto.length + desc;
       }
       return desc;
     } else return code;
   },
   geraAlfabetoAleatorio() {
     const ret = [];
-    for(var a in alfabeto)
+    for (var a in alfabeto)
       verifica(alfabeto[a]);
     return ret;
+
     function verifica(a) {
       let code = utils.converteStringToCode(a)[0];
-      code = code == 0 ? parseInt(Math.random() * 10) : code; 
+      code = code == 0 ? parseInt(Math.random() * 10) : code;
       code = parseInt((Math.random() * 10) * code);
-      if(code >= alfabeto.length)
-       code = parseInt(code/ alfabeto.length)
+      if (code >= alfabeto.length)
+        code = parseInt(code / alfabeto.length)
       const srt = utils.converteCodeToString([code]);
-      if (ret.every(r => r.eq != srt)) {
+      if (ret.every(r => r.eq != srt) && (a != srt)) {
         ret.push({
           l: a,
           eq: srt
@@ -63,15 +71,22 @@ const utils = {
       } else verifica(a);
     }
   },
-  deslocamento(str, des) {
+  deslocamento(str) {
+    const des = gerarDeslocamento();
     let code = utils.converteStringToCode(str);
     code = utils.converteCodeToDeslocamento(code, des);
-    let newStr =  utils.converteCodeToString(code);
+    let newStr = utils.converteCodeToString(code);
+
+    newStr = newStr.replace(/\n/g,' ');
+    newStr = newStr.replace(/[\\"]/g,' ');
     return {
       key: des,
       out: newStr
-    } 
-
+    }
+    function gerarDeslocamento() {
+      const aleatorio = parseInt((Math.random() * 100) % alfabeto.length);
+      return aleatorio > alfabeto.length || aleatorio == 0 ? gerarDeslocamento() : aleatorio;
+    }
   },
   substituicao(str) {
     const ret = [];
@@ -81,10 +96,12 @@ const utils = {
       var regexpr = new RegExp(a.l, 'g');
       str = str.replace(regexpr, a.eq.toLowerCase());
     });
+    str = str.replace(/\n/g,' ');
+    str = str.replace(/[\\"]/g,' ');
     return {
       key: aletaorio,
       out: str.toLowerCase()
-    } 
+    }
   },
   converteSub(sub) {
     sub.key.forEach(a => {
@@ -92,9 +109,36 @@ const utils = {
       sub.out = sub.out.replace(regexpr, a.l.toUpperCase());
     });
     sub.out.toLowerCase();
+
+    sub.out = sub.out.replace(/\n/g,' ');
+    sub.out = sub.out.replace(/[\\"]/g,' ');
     return sub
   },
-  
+  deslocamento_volta(str) {
+    let i = -1;
+    let temNoDicionario = false;
+    let retorno = str;
+    do {
+      i++;
+      let code = utils.converteStringToCode(str);
+      code = utils.converteCodeToDeslocamento(code, -i);
+      let textoGerado =  utils.converteCodeToString(code);
+      let split = textoGerado.split(' ').map(s => s.replace(/\W/g, ''));
+      temNoDicionario = utils.verificaSeTemNoDicionario(split);
+      if(temNoDicionario) retorno = textoGerado;
+    } while(i < 26 && !temNoDicionario);
+
+    retorno = retorno.replace(/\n/g,' ');
+    retorno = retorno.replace(/[\\"]/g,' ');
+    return {
+      key: temNoDicionario ? i : 'keyless',
+      out: retorno
+    }
+  },
+  verificaSeTemNoDicionario(s) {
+    dicionario.map(d => d = utils.removeAcentos(d));
+    return s.some(_s => dicionario.indexOf(_s) > 0);
+  }
 }
 
 var removeAcentosRegExp = [];

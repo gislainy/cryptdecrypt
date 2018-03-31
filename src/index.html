@@ -24,8 +24,8 @@
             <option value="null"></option>
             <option value="crypt-cifra">Criptografa - Cifra de Cesar</option>
             <option value="crypt-sub">Criptografa - Substituição</option>
-            <option value="decrypt-sub">Descriptografa - Substituição</option>
             <option value="decrypt-cifra">Descriptografa - Cifra de Cesar</option>
+            <option value="decrypt-sub">Descriptografa - Substituição</option>
           </select>
         </div>
         <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="enviarArquivo()">Enviar</button>
@@ -37,6 +37,7 @@
           <label for="out">Saída</label>
           <textarea class="form-control" id="out" rows="10"></textarea>
         </div>
+        <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="baixarArquivo()">Baixar</button>
       </div>
     </div>
 
@@ -86,8 +87,14 @@
         const res = JSON.parse(event.srcElement.response);
         var chave = document.getElementById('chave');
         chave.innerHTML = JSON.stringify(res.key);
+        chave.innerHTML = chave.innerHTML.replace(/\n/g, '');
+        chave.innerHTML = chave.innerHTML.replace(/[\\"]/g, '');
         var out = document.getElementById('out');
-        out.innerHTML = JSON.stringify(res.out, null, 2).replace(/\n/g,' ');;
+        res.out = res.out.replace(/\n/g, ' ');
+        res.out = res.out.replace(/[\\"]/g, ' ');
+        out.innerHTML = JSON.stringify(res.out, null, 2);
+        out.innerHTML = out.innerHTML.replace(/\n/g, '');
+        out.innerHTML = out.innerHTML.replace(/[\\"]/g, '');
         console.log('success', 'A transferência foi concluída', 'Importa');
       }
 
@@ -99,6 +106,25 @@
         console.log('success', 'A transferência foi cancelada pelo usuári', 'Importa');
       }
     }
+  }
+  function baixarArquivo() {
+    var out = document.getElementById('out').value;
+    const file = document.querySelector('#file').files[0].name.replace(/(\.)\w+/g, '_');
+    const metodo = document.querySelector('#metodo').value;
+    if (out && file && metodo)
+      download(file + metodo, out);
+  }
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
   }
 </script>
 

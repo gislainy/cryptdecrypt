@@ -11,8 +11,9 @@ app.post('/api/crypt-cifra', function(req, res) {
         bodyStr += chunk.toString();
     });
     req.on("end",function(){
-
-        const ret = utils.deslocamento(bodyStr.replace(/\n/g,' '), 5);
+        bodyStr = bodyStr.replace(/\n/g,' ');
+        bodyStr = bodyStr.replace(/[\\"]/g,' ');
+        const ret = utils.deslocamento(bodyStr);
         res.send(JSON.stringify(ret));
     });
 
@@ -23,8 +24,9 @@ app.post('/api/crypt-sub', function(req, res) {
         bodyStr += chunk.toString();
     });
     req.on("end",function(){
-
-        const ret = utils.substituicao(bodyStr.replace(/\n/g,' '));
+        bodyStr = bodyStr.replace(/\n/g,' ');
+        bodyStr = bodyStr.replace(/[\\"]/g,' ');
+        const ret = utils.substituicao(bodyStr);
         res.send(JSON.stringify(ret));
     });
 });
@@ -40,6 +42,16 @@ app.post('/api/decrypt-sub', function(req, res) {
     console.log('/api/decrypt-sub');
 });
 app.post('/api/decrypt-cifra', function(req, res) {
+    var bodyStr = '';
+    req.on("data",function(chunk){
+        bodyStr += chunk.toString();
+    });
+    req.on("end",function(){
+        bodyStr = bodyStr.replace(/\n/g,' ');
+        bodyStr = bodyStr.replace(/[\\"]/g,' ');
+        const ret = utils.deslocamento_volta(bodyStr);
+        res.send(JSON.stringify(ret));
+    });
     console.log('/api/decrypt-cifra');
 });
 

@@ -1,13 +1,9 @@
 
 const utils = require('./utils');
-const fs = require('fs');
 
-// fs.unlink('/out/poema.txt', (err) => {
-//   if (err) throw err;
-//   console.log('successfully deleted /tmp/hello');
-// });
-// deslocamento(string, 5);
-// deslocamento('zola', 5);
+
+deslocamento('gislainy crisóstomo velasco', 5);
+deslocamento('zola', 5);
 function deslocamento(str, des) {
   let code = utils.converteStringToCode(str);
   code = utils.converteCodeToDeslocamento(code, des);
@@ -15,7 +11,7 @@ function deslocamento(str, des) {
   console.log(newStr);
   return newStr;
 }
-substituicao(string);
+substituicao('string');
 function substituicao(str) {
   const ret = [];
   const aletaorio = utils.geraAlfabetoAleatorio();
@@ -28,3 +24,8 @@ function substituicao(str) {
   console.log(str);
   return str;
 }
+console.log(utils.deslocamento_volta('XYWNSL HTR YJCYT.'));
+console.log(utils.deslocamento_volta('LNXQFNSD HWNXTXYTRT AJQFXHT'));
+
+
+
