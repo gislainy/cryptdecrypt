@@ -9,7 +9,7 @@ const utils = {
     return s;
   },
   converteStringToCode(string) {
-    string = utils.removeAcentos(string);
+    // string = utils.removeAcentos(string);
     const ret = [];
     for (s in string) {
       const posicao = string[s].toUpperCase();
@@ -124,7 +124,7 @@ const utils = {
       code = utils.converteCodeToDeslocamento(code, -i);
       let textoGerado =  utils.converteCodeToString(code);
       let split = textoGerado.split(' ').map(s => s.replace(/\W/g, ''));
-      temNoDicionario = utils.verificaSeTemNoDicionario(split);
+      temNoDicionario = utils.verificaSeTemAlgumaNoDicionario(split);
       if(temNoDicionario) retorno = textoGerado;
     } while(i < 26 && !temNoDicionario);
 
@@ -135,7 +135,42 @@ const utils = {
       out: retorno
     }
   },
-  verificaSeTemNoDicionario(s) {
+  verificaSeTemAlgumaNoDicionario(s) {
+    return s.some(_s => {
+      if(dicionario.indexOf(_s) > 0) {
+        console.log(_s)
+        return true;
+      }
+    });
+  },
+  sub_volta(str) {
+    let i = -1;
+    let temNoDicionario = false;
+    let retorno = str;
+    const textoSemAcento = utils.removeAcentos(str).toUpperCase();
+    do {
+      const aletaorio = utils.geraAlfabetoAleatorio();
+      let textoGerado = textoSemAcento;
+      aletaorio.forEach(a => {
+        var regexpr = new RegExp(a.l, 'g');
+        textoGerado = textoGerado.replace(regexpr, a.eq.toLowerCase());
+      });
+      let split = textoGerado.split(' ').map(s => s.replace(/\W/g, ''));
+      temNoDicionario = utils.verificaSeTemAlgumaNoDicionario(split);
+      if(temNoDicionario) {
+        i = aletaorio;
+        retorno = textoGerado;
+      }
+    } while(!temNoDicionario);
+
+    retorno = retorno.replace(/\n/g,' ');
+    retorno = retorno.replace(/[\\"]/g,' ');
+    return {
+      key: i == -1 ? 'keyless' : i,
+      out: retorno
+    }
+  },
+  verificaSeTemTodasNoDicionario(s) {
     return s.some(_s => {
       if(dicionario.indexOf(_s) > 0) {
         console.log(_s)
