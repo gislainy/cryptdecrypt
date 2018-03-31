@@ -8073,4 +8073,4 @@ module.exports = [
 ].map(d => {
   d = d.toUpperCase();
   return d;
-}).filter(d => (d.length > 3));
+}).filter(d => (d.length >= 5));

@@ -136,7 +136,12 @@ const utils = {
     }
   },
   verificaSeTemNoDicionario(s) {
-    return s.some(_s => dicionario.indexOf(_s) > 0);
+    return s.some(_s => {
+      if(dicionario.indexOf(_s) > 0) {
+        console.log(_s)
+        return true;
+      }
+    });
   }
 }
 
