@@ -65,6 +65,9 @@ app.post('/api/decrypt-cifra', function(req, res) {
   
     console.log('/api/decrypt-cifra');
 });
+app.set('port', (process.env.PORT || 3000));
 
-app.listen(3000);
-
+app.listen(app.get('port'), function() {
+    console.log('Node app is running on port', app.get('port'));
+  });
+  
