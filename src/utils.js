@@ -9,7 +9,7 @@ const utils = {
     return s;
   },
   converteStringToCode(string) {
-    // string = utils.removeAcentos(string);
+    string = utils.removeAcentos(string);
     const ret = [];
     for (s in string) {
       const posicao = string[s].toUpperCase();
