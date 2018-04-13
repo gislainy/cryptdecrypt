@@ -24,8 +24,10 @@
             <option value="null"></option>
             <option value="crypt-cifra">Criptografa - Cifra de Cesar</option>
             <option value="crypt-sub">Criptografa - Substituição</option>
+            <option value="crypt-aes">Criptografa - AES 128 Bits</option>
             <option value="decrypt-cifra">Descriptografa - Cifra de Cesar</option>
             <option value="decrypt-sub">Descriptografa - Substituição</option>
+            <option value="decrypt-aes">Descriptografa - AES 128 Bits</option>
           </select>
         </div>
         <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="enviarArquivo()">Enviar</button>
@@ -63,7 +65,8 @@
     }
     function enviar_para_servidor(json) {
       let url;
-      if (metodo == "crypt-cifra")
+      if(metodo!=undefined || metodo != ""){
+      /*if (metodo == "crypt-cifra")
         url = '/api/crypt-cifra';
       else if (metodo == "crypt-sub")
         url = '/api/crypt-sub';
@@ -71,7 +74,9 @@
         url = '/api/decrypt-sub';
       else if (metodo == "decrypt-cifra")
         url = '/api/decrypt-cifra';
-      else {
+      */
+        url = '/api/' + metodo;
+      }  else {
         return alert('Escolha um método válido');
       }
       var xmlHttp = new XMLHttpRequest();

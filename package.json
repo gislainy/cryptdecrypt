@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/gislainy/cryptdecrypt#readme",
   "dependencies": {
+    "aes-js": "^3.1.0",
     "express": "^4.16.3"
   }
 }

@@ -1,5 +1,6 @@
 const alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let dicionario = require('./dicionario');
+var aesjs = require('aes-js');
 
 const utils = {
   removeAcentos(s) {
@@ -177,6 +178,40 @@ const utils = {
         return true;
       }
     });
+  },
+
+  cryptografaAes(texto){
+
+    var key = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
+    var textoToBytes = aesjs.utils.utf8.toBytes(texto);
+    
+    // O parametro counter é opcional, e caso omitido será usado 1 
+    var aesCtr = new aesjs.ModeOfOperation.ctr(key);
+    var encryptedBytes = aesCtr.encrypt(textoToBytes);
+    
+    // Para enviar para a tela será necessário converter de binário para hexadecimal
+    var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+    return {
+      key: 'AES - 128 bits',
+      out: encryptedHex
+    }
+
+  },
+  
+  decryptografaAes(texto){
+      var key = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
+      // Obtendo o texto criptografado do arquivo consideramos que está em hexadecimal
+      var encryptedBytes = aesjs.utils.hex.toBytes(texto);
+
+      var aesCtr = new aesjs.ModeOfOperation.ctr(key);
+      var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+
+      // Convertendo bites de volta pra texto
+      var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+      return {
+        key: 'AES - 128 bits',
+        out: decryptedText
+      }
   }
 }
 

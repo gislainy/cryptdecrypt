@@ -65,6 +65,26 @@ app.post('/api/decrypt-cifra', function(req, res) {
   
     console.log('/api/decrypt-cifra');
 });
+app.post('/api/crypt-aes', function(req, res) {
+    var bodyStr = '';
+    req.on("data",function(chunk){
+        bodyStr += chunk.toString();
+    });
+    req.on("end",function(){
+        const ret = utils.cryptografaAes(bodyStr);
+        res.send(JSON.stringify(ret));
+    });
+});
+app.post('/api/decrypt-aes', function(req, res) {
+    var bodyStr = '';
+    req.on("data",function(chunk){
+        bodyStr += chunk.toString();
+    });
+    req.on("end",function(){
+        const ret = utils.decryptografaAes(bodyStr);
+        res.send(JSON.stringify(ret));
+    });
+});
 app.set('port', (process.env.PORT || 3000));
 
 app.listen(app.get('port'), function() {
