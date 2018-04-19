@@ -1,6 +1,7 @@
 const alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let dicionario = require('./dicionario');
 var aesjs = require('aes-js');
+var jwt = require('jsonwebtoken');
 
 const utils = {
   removeAcentos(s) {
@@ -179,7 +180,6 @@ const utils = {
       }
     });
   },
-
   cryptografaAes(texto){
 
     var key = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
@@ -195,9 +195,7 @@ const utils = {
       key: 'AES - 128 bits',
       out: encryptedHex
     }
-
   },
-  
   decryptografaAes(texto){
       var key = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
       // Obtendo o texto criptografado do arquivo consideramos que está em hexadecimal
@@ -212,6 +210,23 @@ const utils = {
         key: 'AES - 128 bits',
         out: decryptedText
       }
+  },
+  criptografaJwt(jsonEntrada){
+    var texto = jsonEntrada.text;
+    var privateKey = jsonEntrada.key;
+    var publicKey;
+    var cryptedText = "";
+    return {
+      key: 'Sua chave publica é: ' + publicKey ,
+      out: cryptedText
+    }
+  },
+  decriptografaJwt(jsonEntrada){
+    console.log(JSON.stringify(jsonEntrada));
+    return {
+      key: 'Chave Pública: ' + publicKey ,
+      out: decryptedText
+    }
   }
 }
 

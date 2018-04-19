@@ -31,14 +31,6 @@ app.post('/api/crypt-sub', function(req, res) {
     });
 });
 app.post('/api/decrypt-sub', function(req, res) {
-    // var bodyStr = '';
-    // req.on("data",function(chunk){
-    //     bodyStr += chunk.toString();
-    // });
-    // req.on("end",function(){
-    //     const ret = utils.converteSub(JSON.parse(bodyStr));
-    //     res.send(JSON.stringify(ret));
-    // });
     var bodyStr = '';
     req.on("data",function(chunk){
         bodyStr += chunk.toString();
@@ -85,6 +77,27 @@ app.post('/api/decrypt-aes', function(req, res) {
         res.send(JSON.stringify(ret));
     });
 });
+app.post('/api/crypt-jwt', function(req, res) {
+    var bodyStr = '';
+    req.on("data",function(chunk){
+        bodyStr += chunk.toString();
+    });
+    req.on("end",function(){
+        const ret = utils.criptografaJwt(JSON.parse(bodyStr));
+        res.send(JSON.stringify(ret));
+    });
+});
+app.post('/api/decrypt-jwt', function(req, res) {
+    var bodyStr = '';
+    req.on("data",function(chunk){
+        bodyStr += chunk.toString();
+    });
+    req.on("end",function(){
+        const ret = utils.decriptografaJwt(JSON.parse(bodyStr));
+        res.send(JSON.stringify(ret));
+    });
+});
+
 app.set('port', (process.env.PORT || 3000));
 
 app.listen(app.get('port'), function() {

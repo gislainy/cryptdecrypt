@@ -20,19 +20,21 @@
         </div>
         <div class="form-group ">
           <label for="metodo">Escolha o método</label>
-          <select id="metodo" class="form-control form-control-lg">
+          <select id="metodo" class="form-control form-control-lg" onchange="alterarLabel()">
             <option value="null"></option>
             <option value="crypt-cifra">Criptografa - Cifra de Cesar</option>
             <option value="crypt-sub">Criptografa - Substituição</option>
             <option value="crypt-aes">Criptografa - AES 128 Bits</option>
+            <option value="crypt-jwt">Criptografa - Chave Pública/Privada</option>
             <option value="decrypt-cifra">Descriptografa - Cifra de Cesar</option>
             <option value="decrypt-sub">Descriptografa - Substituição</option>
             <option value="decrypt-aes">Descriptografa - AES 128 Bits</option>
+            <option value="decrypt-jwt">Descriptografa - Chave Pública/Privada</option>
           </select>
         </div>
         <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="enviarArquivo()">Enviar</button>
         <div class="form-group">
-          <label for="chave">Chave</label>
+          <label id="labelChave" for="chave">Chave</label>
           <textarea class="form-control" id="chave" rows="2"></textarea>
         </div>
         <div class="form-group">
@@ -46,35 +48,50 @@
 
 </body>
 <script>
-
+  function alterarLabel(){
+    const metodo = document.querySelector('#metodo').value;
+    const label = document.querySelector('#labelChave');
+    if(metodo=="decrypt-jwt"){
+      label.innerText = "Chave Pública";
+    } else if (metodo == "crypt-jwt"){
+      label.innerText = "Chave Privada";
+    } else {
+      label.innerText = "Chave";
+    }
+  }
   function enviarArquivo() {
     const metodo = document.querySelector('#metodo').value;
     const file = document.querySelector('#file');
+    const ehJwt = metodo.includes("-jwt");
     openFile(file);
     function openFile(input) {
       var reader = new FileReader();
       reader.onload = function () {
         var text = reader.result;
-        enviar_para_servidor(text);
+        if (ehJwt){
+          var jsonEnv = jsonEnv = new Object();
+          jsonEnv.text = text;
+          jsonEnv.key =  document.querySelector('#chave').value
+        } else {
+          var jsonEnv = jsonEnv = text;
+        }
+        console.log(JSON.stringify(jsonEnv));
+        enviar_para_servidor(jsonEnv);
       };
-      if (input.files[0])
+      if (input.files[0]){
+        if (ehJwt){
+          if(document.querySelector('#chave').value.length==0){
+            return alert('Informe a chave');
+          }
+        }
         reader.readAsText(input.files[0]);
-      else {
+      } else {
         return alert('Escolha um arquivo válido');
       }
     }
     function enviar_para_servidor(json) {
       let url;
       if(metodo!=undefined || metodo != ""){
-      /*if (metodo == "crypt-cifra")
-        url = '/api/crypt-cifra';
-      else if (metodo == "crypt-sub")
-        url = '/api/crypt-sub';
-      else if (metodo == "decrypt-sub")
-        url = '/api/decrypt-sub';
-      else if (metodo == "decrypt-cifra")
-        url = '/api/decrypt-cifra';
-      */
         url = '/api/' + metodo;
       }  else {
         return alert('Escolha um método válido');
@@ -83,7 +100,7 @@
       var mimeType = 'text/json';
       xmlHttp.open('POST', url, true);  // true : asynchrone false: synchrone
       xmlHttp.setRequestHeader('Content-Type', mimeType);
-      xmlHttp.send(json);
+      xmlHttp.send(JSON.stringify(json));
       xmlHttp.addEventListener('load', transferComplete, false);
       xmlHttp.addEventListener('error', transferFailed, false);
       xmlHttp.addEventListener('abort', transferCanceled, false);
