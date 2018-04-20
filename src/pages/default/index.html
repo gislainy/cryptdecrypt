@@ -1,0 +1,153 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Crypt/Decrypt</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Crypt/Decrypt</h1>
+    <div class="row">
+      <div class="col-sm">
+        <div class="form-group">
+          <label for="file">Escolha o arquivo</label>
+          <input type="file" class="form-control-file" id="file">
+        </div>
+        <div class="form-group ">
+          <label for="metodo">Escolha o método</label>
+          <select id="metodo" class="form-control form-control-lg" onchange="alterarLabel()">
+            <option value="null"></option>
+            <option value="crypt-cifra">Criptografa - Cifra de Cesar</option>
+            <option value="crypt-sub">Criptografa - Substituição</option>
+            <option value="crypt-aes">Criptografa - AES 128 Bits</option>
+            <option value="crypt-jwt">Criptografa - Chave Pública/Privada</option>
+            <option value="decrypt-cifra">Descriptografa - Cifra de Cesar</option>
+            <option value="decrypt-sub">Descriptografa - Substituição</option>
+            <option value="decrypt-aes">Descriptografa - AES 128 Bits</option>
+            <option value="decrypt-jwt">Descriptografa - Chave Pública/Privada</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="enviarArquivo()">Enviar</button>
+        <div class="form-group">
+          <label id="labelChave" for="chave">Chave</label>
+          <textarea class="form-control" id="chave" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="out">Saída</label>
+          <textarea class="form-control" id="out" rows="10"></textarea>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-lg btn-block" onclick="baixarArquivo()">Baixar</button>
+      </div>
+    </div>
+
+
+</body>
+<script>
+  function alterarLabel(){
+    const metodo = document.querySelector('#metodo').value;
+    const label = document.querySelector('#labelChave');
+    if(metodo=="decrypt-jwt"){
+      label.innerText = "Chave Pública";
+    } else if (metodo == "crypt-jwt"){
+      label.innerText = "Chave Privada";
+    } else {
+      label.innerText = "Chave";
+    }
+  }
+  function enviarArquivo() {
+    const metodo = document.querySelector('#metodo').value;
+    const file = document.querySelector('#file');
+    const ehJwt = metodo.includes("-jwt");
+    openFile(file);
+    function openFile(input) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var text = reader.result;
+        if (ehJwt){
+          var jsonEnv = jsonEnv = new Object();
+          jsonEnv.text = text;
+          jsonEnv.key =  document.querySelector('#chave').value
+        } else {
+          var jsonEnv = jsonEnv = text;
+        }
+        console.log(JSON.stringify(jsonEnv));
+        enviar_para_servidor(jsonEnv);
+      };
+      if (input.files[0]){
+        if (ehJwt){
+          if(document.querySelector('#chave').value.length==0){
+            return alert('Informe a chave');
+          }
+        }
+        reader.readAsText(input.files[0]);
+      } else {
+        return alert('Escolha um arquivo válido');
+      }
+    }
+    function enviar_para_servidor(json) {
+      let url;
+      if(metodo!=undefined || metodo != ""){
+        url = '/api/' + metodo;
+      }  else {
+        return alert('Escolha um método válido');
+      }
+      var xmlHttp = new XMLHttpRequest();
+      var mimeType = 'text/json';
+      xmlHttp.open('POST', url, true);  // true : asynchrone false: synchrone
+      xmlHttp.setRequestHeader('Content-Type', mimeType);
+      xmlHttp.send(JSON.stringify(json));
+      xmlHttp.addEventListener('load', transferComplete, false);
+      xmlHttp.addEventListener('error', transferFailed, false);
+      xmlHttp.addEventListener('abort', transferCanceled, false);
+
+      function transferComplete(event) {
+        const res = JSON.parse(event.srcElement.response);
+        var chave = document.getElementById('chave');
+        chave.innerHTML = JSON.stringify(res.key);
+        chave.innerHTML = chave.innerHTML.replace(/\n/g, '');
+        chave.innerHTML = chave.innerHTML.replace(/[\\"]/g, '');
+        var out = document.getElementById('out');
+        res.out = res.out.replace(/\n/g, ' ');
+        res.out = res.out.replace(/[\\"]/g, ' ');
+        out.innerHTML = JSON.stringify(res.out, null, 2);
+        out.innerHTML = out.innerHTML.replace(/\n/g, '');
+        out.innerHTML = out.innerHTML.replace(/[\\"]/g, '');
+        console.log('success', 'A transferência foi concluída', 'Importa');
+      }
+
+      function transferFailed() {
+        console.log('success', 'Um erro ocorreu durante a transferência do arquivo', 'Importa');
+      }
+
+      function transferCanceled() {
+        console.log('success', 'A transferência foi cancelada pelo usuári', 'Importa');
+      }
+    }
+  }
+  function baixarArquivo() {
+    var out = document.getElementById('out').value;
+    const file = document.querySelector('#file').files[0].name.replace(/(\.)\w+/g, '_');
+    const metodo = document.querySelector('#metodo').value;
+    if (out && file && metodo)
+      download(file + metodo, out);
+  }
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+</script>
+
+</html>

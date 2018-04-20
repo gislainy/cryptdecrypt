@@ -2,8 +2,17 @@ var express = require('express');
 var app = express();
 var path = require('path');
 const utils = require('./utils');
+app.use('/bin', express.static(__dirname + '/bin'));
+
+
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.sendFile(path.join(__dirname + '/pages/index.html'));
+});
+app.get('/default', function(req, res) {
+    res.sendFile(path.join(__dirname + '/pages/default/index.html'));
+});
+app.get('/jsencrypt', function(req, res) {
+    res.sendFile(path.join(__dirname + '/pages/jsencrypt/index.html'));
 });
 app.post('/api/crypt-cifra', function(req, res) {
     var bodyStr = '';
